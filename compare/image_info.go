@@ -8,7 +8,7 @@ import (
 	_ "image/png"
 
 	"github.com/corona10/goimagehash"
-	"github.com/gographics/imagick/imagick"
+	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
 const (

@@ -18,14 +18,16 @@ type FileInfo struct {
 	MD5    string
 }
 
-var DEFAUTL_FILE_INFO = &FileInfo{}
+var DEFAULT_FILE_INFO = &FileInfo{}
 
 func ParseFileInfo(data []byte) *FileInfo {
 	info := &FileInfo{
 		Size: len(data),
 	}
-	info.Format, _ = filetype.Match(data)
-	info.MD5 = md5.Sum(data)
+	if kind, err := filetype.Match(data); err != nil {
+		info.Format = kind.Extension
+	}
+	info.MD5 = string(md5.Sum(data))
 	return info
 }
 
