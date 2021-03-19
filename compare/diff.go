@@ -47,3 +47,16 @@ func (diff *BytesDiff) String() string {
 func (diff *BytesDiff) Result() (interface{}, interface{}) {
 	return diff.Ori, diff.Replay
 }
+
+type StringArrayDiff struct {
+	Ori    []string
+	Replay []string
+}
+
+func (diff *StringArrayDiff) String() string {
+	return fmt.Sprintf("%v, %v", diff.Ori, diff.Replay)
+}
+
+func (diff *StringArrayDiff) Result() (interface{}, interface{}) {
+	return diff.Ori, diff.Replay
+}

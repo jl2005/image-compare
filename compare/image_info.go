@@ -50,36 +50,28 @@ func NewImageInfo() *ImageInfo {
 
 func ParseImageInfo(data []byte) *ImageInfo {
 	info := NewImageInfo()
-	info.ParseImageInfo(data)
-	return info
-
-	if !ParseImageBaseInfo(info, data) || !ParseImageHash(info, data) {
-		return info
-	}
-	return info
-}
-
-func (this *ImageInfo) ParseImageInfo(data []byte) {
 	mw := imagick.NewMagickWand()
 	if err := mw.ReadImageBlob(data); err != nil {
 		info.Error = err.Error()
-		return
+		return info
 	}
-	this.Width = mw.GetImageWidth()
-	this.Height = mw.GetImageHeight()
-	this.Quality = mw.GetCompressionQuality()
+	info.Width = int(mw.GetImageWidth())
+	info.Height = int(mw.GetImageHeight())
+	info.Quality = int(mw.GetCompressionQuality())
 	if mw.GetImageFormat() == "GIF" {
-		this.FrameNum, _ = mw.GetImageLength()
+		frameNum, _ := mw.GetImageLength()
+		info.FrameNum = int(frameNum)
 	}
 	r := bytes.NewReader(data)
 	img, _, err := image.Decode(r)
 	if err != nil {
 		info.Error = err.Error()
-		return
+		return info
 	}
-	this.AverageHash, _ = goimagehash.AverageHash(img)
-	this.DifferenceHash, _ = goimagehash.DifferenceHash(img)
-	this.PerceptionHash, _ = goimagehash.PerceptionHash(img)
+	info.AverageHash, _ = goimagehash.AverageHash(img)
+	info.DifferenceHash, _ = goimagehash.DifferenceHash(img)
+	info.PerceptionHash, _ = goimagehash.PerceptionHash(img)
+	return info
 }
 
 func (this *ImageInfo) Compare(other *ImageInfo, result map[string]Diff) {

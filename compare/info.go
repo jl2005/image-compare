@@ -1,24 +1,23 @@
 package compare
 
-import (
-	"net/http"
-)
-
 type Info struct {
 	httpInfo  *HttpInfo
 	fileInfo  *FileInfo
 	imageInfo *ImageInfo
+
+	Data []byte
 }
 
-var DEFAUTL_INFO = &Info{}
+var DEFAULT_INFO = &Info{}
 
-func ParseInfo(status int, header map[string]string, body string) {
+func ParseInfo(status int, header map[string][]string, data []byte) *Info {
 	info := &Info{
 		httpInfo: ParseHttpInfo(status, header),
+		Data:     data,
 	}
-	info.fileInfo = ParseFileInfo(body)
+	info.fileInfo = ParseFileInfo(data)
 	if isImage(info.fileInfo.Format) {
-		info.imageInfo = ParseImageInfo(body)
+		info.imageInfo = ParseImageInfo(data)
 	}
 	return info
 }
@@ -35,5 +34,5 @@ func (this *Info) Compare(other *Info, result map[string]Diff) {
 	}
 	this.httpInfo.Compare(other.httpInfo, result)
 	this.fileInfo.Compare(other.fileInfo, result)
-	this.imageInfo.Compare(other.fileInfo, result)
+	this.imageInfo.Compare(other.imageInfo, result)
 }

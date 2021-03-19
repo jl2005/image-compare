@@ -27,7 +27,8 @@ func ParseFileInfo(data []byte) *FileInfo {
 	if kind, err := filetype.Match(data); err != nil {
 		info.Format = kind.Extension
 	}
-	info.MD5 = string(md5.Sum(data))
+	hash := md5.Sum(data)
+	info.MD5 = string(hash[:])
 	return info
 }
 

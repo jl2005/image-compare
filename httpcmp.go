@@ -1,13 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
-	"image"
-	_ "image/gif"
-	_ "image/jpeg"
-	_ "image/png"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -148,7 +143,7 @@ func worker(base string, update string) {
 			log.Printf("same get error baseErr=%v, updateErr=%v, url=%s", baseErr, updateErr, src.RequestURI)
 			continue
 		}
-		result := make(map[string]comare.Diff)
+		result := make(map[string]compare.Diff)
 		baseInfo.Compare(updateInfo, result)
 		if len(result) == 0 {
 			log.Printf("same %v", src.RequestURI)
@@ -157,9 +152,11 @@ func worker(base string, update string) {
 			for k, v := range result {
 				out += fmt.Sprintf("%s: %s ", k, v.String())
 			}
-			id := getFileId()
-			basePath = save(fmt.Sprintf("%s/%05d", path, id), baseInfo.Data)
-			updatePath = save(fmt.Sprintf("%s/%05d", path, id+1), updateInfo.Data)
+			id := getFileID()
+			basePath := fmt.Sprintf("%s/%05d", path, id)
+			basePath = save(basePath, baseInfo.Data)
+			updatePath := fmt.Sprintf("%s/%05d", path, id+1)
+			updatePath = save(updatePath, updateInfo.Data)
 			log.Printf("not same %s file: %s,%s %s", out, basePath, updatePath, src.RequestURI)
 		}
 	}
@@ -186,7 +183,7 @@ func sendRequest(addr string, src *http.Request) (*compare.Info, error) {
 	return info, nil
 }
 
-func getFileID() int {
+func getFileID() int64 {
 	return atomic.AddInt64(&fileID, 2)
 }
 
